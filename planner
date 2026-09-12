@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Planner CLI. Run from a checkout named `planner` so `import planner` resolves.
+# Safe default: no --trust / --yolo / --agent-force. Those are opt-in risk.
+set -euo pipefail
+
+PLANNER_HOME="$(cd "$(dirname "$0")" && pwd)"
+HOST="$(cd "$PLANNER_HOME/.." && pwd)"
+cd "$HOST"
+export PYTHONPATH="$HOST${PYTHONPATH:+:$PYTHONPATH}"
+
+if [[ -x "$PLANNER_HOME/.venv/bin/python" ]]; then
+  PY="$PLANNER_HOME/.venv/bin/python"
+elif [[ -x "$HOST/.venv/bin/python" ]]; then
+  PY="$HOST/.venv/bin/python"
+else
+  PY="${PYTHON:-python3}"
+fi
+
+SUBCOMMAND="${1:-}"
+if [[ -z "$SUBCOMMAND" ]]; then
+  echo "Usage: $0 init|refine|execute|draft ..." >&2
+  echo "  Force flags (--trust, --yolo, --agent-force) are opt-in. Manual Cursor is the default-safe path." >&2
+  exit 1
+fi
+
+case "$SUBCOMMAND" in
+  draft)
+    SLUG="${2:-}"
+    if [[ -z "$SLUG" ]]; then
+      echo "Usage: $0 draft <slug> -p \"paragraph\" [--overwrite]" >&2
+      exit 1
+    fi
+    shift 2
+    exec "$PY" "$PLANNER_HOME/scripts/draft.py" "$SLUG" "$@"
+    ;;
+  init|refine|execute)
+    IDEA="${2:-}"
+    if [[ -z "$IDEA" ]]; then
+      echo "Usage: $0 $SUBCOMMAND <ideaname> [options...]" >&2
+      exit 1
+    fi
+    shift 2
+    case "$SUBCOMMAND" in
+      init) exec "$PY" "$PLANNER_HOME/scripts/refine.py" init "$IDEA" "$@" ;;
+      refine) exec "$PY" "$PLANNER_HOME/scripts/refine.py" run "$IDEA" "$@" ;;
+      execute) exec "$PY" "$PLANNER_HOME/scripts/execute.py" "$IDEA" "$@" ;;
+    esac
+    ;;
+  *)
+    echo "Unknown subcommand: $SUBCOMMAND (use init, refine, execute, or draft)" >&2
+    exit 1
+    ;;
+esac

@@ -1,0 +1,10 @@
+title = "Planner"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''\.venv/''',
+  '''workspaces/''',
+]

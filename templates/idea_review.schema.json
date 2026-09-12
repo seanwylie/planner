@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Idea Review Response",
+  "description": "Strict response format for qualitative idea review. You MUST return exactly this JSON shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pass", "feedback", "suggested_updates", "alternative_idea"],
+  "properties": {
+    "pass": {
+      "type": "boolean",
+      "description": "True if the idea is sound and well-scoped; false if it needs significant revision (you must provide alternative_idea)"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Qualitative evaluation in 2-4 short paragraphs: is it a good idea, well-scoped, goals/non-goals clear, constraints realistic. No implementation details."
+    },
+    "suggested_updates": {
+      "type": "string",
+      "description": "Concrete suggested changes as bullet points or short instructions for the editor to apply"
+    },
+    "fail_reason": {
+      "type": "string",
+      "description": "Optional one-sentence reason when pass is false"
+    },
+    "alternative_idea": {
+      "type": "string",
+      "description": "When pass is false: full markdown of the revised idea document (same section structure). When pass is true: empty string or brief note."
+    }
+  }
+}

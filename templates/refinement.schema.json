@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Planner Review Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "overall_score",
+    "agreed",
+    "must_fix",
+    "should_fix",
+    "questions",
+    "missing_checklist_items",
+    "spec_readiness"
+  ],
+  "properties": {
+    "overall_score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "agreed": {
+      "type": "boolean"
+    },
+    "must_fix": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/definitions/issue_item" }
+    },
+    "should_fix": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/definitions/issue_item" }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" }
+    },
+    "missing_checklist_items": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" }
+    },
+    "spec_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "frontend", "infra", "tests", "docs"],
+      "properties": {
+        "backend": { "type": "number", "minimum": 0, "maximum": 100 },
+        "frontend": { "type": "number", "minimum": 0, "maximum": 100 },
+        "infra": { "type": "number", "minimum": 0, "maximum": 100 },
+        "tests": { "type": "number", "minimum": 0, "maximum": 100 },
+        "docs": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  },
+  "definitions": {
+    "issue_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "area",
+        "issue",
+        "concrete_change",
+        "acceptance_criteria",
+        "risk_level",
+        "category"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+-\\d+$|^[a-z0-9-]+$"
+        },
+        "area": { "type": "string" },
+        "issue": { "type": "string" },
+        "concrete_change": { "type": "string" },
+        "acceptance_criteria": { "type": "string" },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "correctness",
+            "security",
+            "performance",
+            "cost",
+            "ux",
+            "maintainability",
+            "testing",
+            "docs",
+            "rollout"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "references": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
